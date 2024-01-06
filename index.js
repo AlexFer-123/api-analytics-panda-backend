@@ -1,10 +1,12 @@
 const express = require('express')
 const axios = require('axios')
 const circularJSON = require('circular-json')
+const cors = require('cors')
 const app  = express()
 const port = 3000
 
 app.use(express.json())
+app.use(cors())
 
 app.get('/', async (req, res) => {
         const { start_date, end_date, api_key } = req.body
@@ -20,7 +22,7 @@ app.get('/', async (req, res) => {
         const responseVideos = await axios.get('https://api-v2.pandavideo.com.br/videos', config)
         
         for (let i = 0; i < responseVideos.data.videos.length; i++) {
-            
+
             try {
                 const video_id = responseVideos.data.videos[i].id
                 const configPanda = {
