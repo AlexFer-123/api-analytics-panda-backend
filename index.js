@@ -4,43 +4,62 @@ const circularJSON = require('circular-json')
 const app  = express()
 const port = 3000
 
+app.use(express.json())
+
 app.get('/', async (req, res) => {
-    try {
-        const videoIds = []
-        const dateStart = '2023-12-01'
-        const dateEnd = '2023-12-31'
+        const { start_date, end_date, api_key } = req.body
+        const videosData = []
+
 
         const config = {
             headers: {
-                Authorization: 'panda-ee764cc77fd0825d8005de3e82848fef259a03047c2d2d42b25fda0f9780d3fb'
+                Authorization: api_key
             }
         }
     
         const responseVideos = await axios.get('https://api-v2.pandavideo.com.br/videos', config)
         
         for (let i = 0; i < responseVideos.data.videos.length; i++) {
-            videoIds.push(responseVideos.data.videos[i].id)
+            try {
+                const video_id = responseVideos.data.videos[i].id
+                const configPanda = {
+                    headers: {
+                        Authorization: api_key
+                    },
+                    body: {
+                        video_id,
+                        start_date,
+                        end_date
+                    }
+                }
+    
+                const analyticsVideoData = await axios.get(`https://data.pandavideo.com/general/${video_id}`, configPanda)
+                
+                videosData.push({video_id, views: analyticsVideoData.data.views_data}) 
+            } catch (error) {
+                console.log(error)
+            }
         }
 
-
-
-        res.send(videoIds)
-    } catch (error) {
-        
-        console.log(error)
-        res.status(500).send(error)
-
-    }
+        return res.send(circularJSON.stringify(videosData))
 })
 
 app.get('/analytics', async (req, res) => {
-    const { start_date, end_date } = req
+    const { start_date, end_date, api_key } = req.body
 
-    console.log(start_date, end_date)
+    const config = {
+        headers: {
+            Authorization: api_key
+        },
+        body: {
+            start_date,
+            end_date
+        }
+    }
 
-    const reqBody = circularJSON.stringify(req.body)
-    return res.send(reqBody)
+    const responseAnalytics = await axios.get('https://data.pandavideo.com/general', config)
 
+    return res.send(circularJSON.stringify(responseAnalytics.data))
 })
 
 
