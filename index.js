@@ -20,6 +20,7 @@ app.get('/', async (req, res) => {
         const responseVideos = await axios.get('https://api-v2.pandavideo.com.br/videos', config)
         
         for (let i = 0; i < responseVideos.data.videos.length; i++) {
+            
             try {
                 const video_id = responseVideos.data.videos[i].id
                 const configPanda = {
