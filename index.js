@@ -8,8 +8,9 @@ const port = 3000
 app.use(express.json())
 app.use(cors())
 
-app.get('/', async (req, res) => {
+app.post('/', async (req, res) => {
         const { start_date, end_date, api_key } = req.body
+        console.log(req)
         const videosData = []
 
 
@@ -40,15 +41,17 @@ app.get('/', async (req, res) => {
                 
                 videosData.push({video_id, views: analyticsVideoData.data.views_data}) 
             } catch (error) {
-                console.log(error)
+                console.log('oi')
             }
         }
 
         return res.send(circularJSON.stringify(videosData))
 })
 
-app.get('/analytics', async (req, res) => {
+app.post('/analytics', async (req, res) => {
     const { start_date, end_date, api_key } = req.body
+
+    console.log(start_date, end_date, api_key)
 
     const config = {
         headers: {
