@@ -10,7 +10,6 @@ app.use(cors())
 
 app.post('/', async (req, res) => {
         const { start_date, end_date, api_key } = req.body
-        console.log(req)
         const videosData = []
 
 
@@ -39,9 +38,9 @@ app.post('/', async (req, res) => {
     
                 const analyticsVideoData = await axios.get(`https://data.pandavideo.com/general/${video_id}`, configPanda)
                 
-                videosData.push({video_id, views: analyticsVideoData.data.views_data}) 
+                videosData.push({video_id, views: circularJSON.stringify(analyticsVideoData.data.views_data)}) 
             } catch (error) {
-                console.log('oi')
+                console.log(error)
             }
         }
 
