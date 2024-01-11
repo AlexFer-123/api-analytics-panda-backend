@@ -25,6 +25,7 @@ app.post('/', async (req, res) => {
 
             try {
                 const video_id = responseVideos.data.videos[i].id
+                const video_title = responseVideos.data.videos[i].title
                 const configPanda = {
                     headers: {
                         Authorization: api_key
@@ -38,7 +39,7 @@ app.post('/', async (req, res) => {
     
                 const analyticsVideoData = await axios.get(`https://data.pandavideo.com/general/${video_id}`, configPanda)
                 
-                videosData.push({video_id, views: circularJSON.stringify(analyticsVideoData.data.views_data)}) 
+                videosData.push({video_id, video_title, views: circularJSON.stringify(analyticsVideoData.data.total)}) 
             } catch (error) {
                 console.log(error)
             }
